@@ -8,8 +8,7 @@ terraform {
     resource_group_name  = "tfstate"
     storage_account_name = "equalvoteterraform"
     container_name       = "tfstate"
-    # Is this the default?
-    #key                  = "terraform.tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 

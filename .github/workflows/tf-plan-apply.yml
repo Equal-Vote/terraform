@@ -18,8 +18,8 @@ permissions:
 
 # Secrets are in https://github.com/Equal-Vote/terraform/settings/secrets/actions
 env:
-  ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }} 
-  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} 
+  TF_VAR_ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }} 
+  TF_VAR_ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} 
 
 jobs:
   terraform-plan:

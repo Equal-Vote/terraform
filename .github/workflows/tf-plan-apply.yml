@@ -26,6 +26,8 @@ env:
 
 jobs:
   check-env:
+    name: 'Check Env'
+    runs-on: ubuntu-latest
     steps:
     - name: Check env
       id: check-env

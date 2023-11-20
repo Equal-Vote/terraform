@@ -19,12 +19,18 @@ permissions:
 # Secrets are in https://github.com/Equal-Vote/terraform/settings/secrets/actions
 env:
   ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }} 
-  ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
+  #ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} 
-  ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
+  #ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
+  #ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
 
 jobs:
+  check-env:
+    - name: Check env
+      id: check-env
+      run: |
+        echo "echo \"CLIENT_ID=$ARM_CLIENT_ID\""
+
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest

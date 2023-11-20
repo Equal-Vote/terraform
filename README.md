@@ -2,7 +2,6 @@ Based on:
 * https://developer.hashicorp.com/terraform/tutorials/azure-get-started/azure-build
 * https://learn.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli
 * https://github.com/Azure-Samples/terraform-github-actions/blob/main/main.tf
-* https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app
 
 1. Create Service Principal that will be used by GitHub Actions:
     ```

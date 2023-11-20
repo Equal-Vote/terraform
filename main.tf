@@ -27,20 +27,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   resource_group_name = azurerm_resource_group.equalvote.name
   dns_prefix          = "starvoting"
 
-  default_node_pool {
-    name               = "sv"
-    availability_zones = ["2"]
-    vm_size            = "Standard_B2s"
-    vnet_subnet_id     = azurerm_subnet.this.id
-    node_count         = 2
-    min_count          = 2
-    max_count          = 2
-  }
-
   #service_principal {
   #  client_id     = var.ARM_CLIENT_ID
   #  client_secret = var.ARM_CLIENT_SECRET
   #}
+
+  identity {
+    type = "SystemAssigned"
+  }
 
   default_node_pool {
     name       = "agentpool"

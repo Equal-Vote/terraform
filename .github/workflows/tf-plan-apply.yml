@@ -26,6 +26,7 @@ env:
 
 jobs:
   check-env:
+    steps:
     - name: Check env
       id: check-env
       run: |

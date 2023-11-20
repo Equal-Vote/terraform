@@ -25,15 +25,6 @@ env:
   ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
 
 jobs:
-  check-env:
-    name: 'Check Env'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check env
-      id: check-env
-      run: |
-        echo "echo \"CLIENT_ID=$ARM_CLIENT_ID\""
-
   terraform-plan:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest

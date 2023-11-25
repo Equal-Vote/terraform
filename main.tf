@@ -1,3 +1,6 @@
+# Based on:
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster
+
 terraform {
   required_providers {
     azurerm = {
@@ -26,11 +29,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   name                = "star-voting-cluster"
   resource_group_name = azurerm_resource_group.equalvote.name
   dns_prefix          = "starvoting"
-
-  #service_principal {
-  #  client_id     = var.ARM_CLIENT_ID
-  #  client_secret = var.ARM_CLIENT_SECRET
-  #}
 
   identity {
     type = "SystemAssigned"

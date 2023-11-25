@@ -1,3 +1,9 @@
+# Overview
+
+This is the terraform repo for the Equal Vote Coalition. It's currently used to deploy a Kubernetes cluster to Azure.
+
+# Bootstrapping
+
 Based on:
 * https://developer.hashicorp.com/terraform/tutorials/azure-get-started/azure-build
 * https://learn.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli
@@ -38,3 +44,16 @@ Based on:
     az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query '[0].value' -o tsv
     ```
 1. Add ARM_ACCESS_KEY as a secret [here](https://github.com/Equal-Vote/terraform/settings/secrets/actions).
+
+# Updating
+
+terraform init -upgrade
+Should see changes to .terraform.lock.hcl.
+Commit them.
+
+# TODO
+
+Should we be using Managed Identity instead of Service Principal?
+https://arnav.au/2023/09/08/azure-managed-identity-vs-service-principal/
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/managed_service_identity
+

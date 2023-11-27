@@ -24,11 +24,13 @@ resource "azurerm_resource_group" "equalvote" {
   location = "West US 2"
 }
 
-resource "azurerm_kubernetes_cluster" "k8s" {
+resource "azurerm_kubernetes_cluster" "equalvote" {
   location            = azurerm_resource_group.equalvote.location
-  name                = "star-voting-cluster"
+  name                = "equalvote"
   resource_group_name = azurerm_resource_group.equalvote.name
-  dns_prefix          = "starvoting"
+
+  # Commenting out this allegedly optional parameter.
+  #dns_prefix          = "starvoting"
 
   identity {
     type = "SystemAssigned"
@@ -46,17 +48,17 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 }
 
-resource "azurerm_virtual_network" "this" {
-  name                = "sv-vnet"
+resource "azurerm_virtual_network" "equalvote" {
+  name                = "equalvote"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.equalvote.location
   resource_group_name = azurerm_resource_group.equalvote.name
 }
 
-resource "azurerm_subnet" "this" {
-  name                 = "sv-net"
+resource "azurerm_subnet" "equalvote" {
+  name                 = "equalvote"
   resource_group_name  = "equalvote"
-  virtual_network_name = azurerm_virtual_network.this.name
+  virtual_network_name = azurerm_virtual_network.equalvote.name
   address_prefixes     = ["10.0.1.0/24"]
   service_endpoints    = ["Microsoft.Storage"]
 }

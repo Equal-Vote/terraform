@@ -28,9 +28,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   location            = azurerm_resource_group.equalvote.location
   name                = "equalvote"
   resource_group_name = azurerm_resource_group.equalvote.name
-
-  # Commenting out this allegedly optional parameter.
-  #dns_prefix          = "starvoting"
+  dns_prefix          = "equalvote"
 
   identity {
     type = "SystemAssigned"

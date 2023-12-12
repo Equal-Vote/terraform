@@ -45,6 +45,12 @@ Based on:
     ```
 1. Add ARM_ACCESS_KEY as a secret [here](https://github.com/Equal-Vote/terraform/settings/secrets/actions).
 
+# Connecting to the cluster
+
+```
+az aks get-credentials --resource-group equalvote --name equalvote
+```
+
 # Updating
 
 terraform init -upgrade

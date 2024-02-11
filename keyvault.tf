@@ -45,7 +45,7 @@ resource "azurerm_key_vault" "equalvote" {
 resource "azurerm_key_vault_key" "sops" {
   name         = "sops"
   key_vault_id = azurerm_key_vault.equalvote.id
-  key_type     = "EC"
+  key_type     = "RSA"
   key_opts = [
     "decrypt",
     "encrypt",

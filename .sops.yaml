@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: secret.*\.yaml(.dec)?$
+    azure_keyvault: https://equalvote.vault.azure.net/keys/sops/ab881b6e5cbb4d6897600713603ba44e 

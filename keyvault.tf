@@ -1,4 +1,6 @@
-# Based on https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068
+# Based on:
+# https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_key
 # This is for the sops key that we use to encrypted all Kubernetes secrets.
 
 # Updated provider in main.tf to use these features.
@@ -27,17 +29,20 @@ resource "azurerm_key_vault" "equalvote" {
 
     key_permissions = [
       "Create",
+      "Decrypt",
       "Delete",
+      "Encrypt",
       "Get",
+      "GetRotationPolicy",
+      "List",
       "Purge",
       "Recover",
-      "Update",
-      "GetRotationPolicy",
-      "SetRotationPolicy"
+      "SetRotationPolicy",
+      "Update"
     ]
 
     secret_permissions = [
-      "Set",
+      "Set"
     ]
   }
 }
@@ -46,6 +51,7 @@ resource "azurerm_key_vault_key" "sops" {
   name         = "sops"
   key_vault_id = azurerm_key_vault.equalvote.id
   key_type     = "RSA"
+  key_size     = 2048
   key_opts = [
     "decrypt",
     "encrypt",

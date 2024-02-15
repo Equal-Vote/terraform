@@ -2,6 +2,10 @@
 
 This is the terraform repo for the Equal Vote Coalition. It's currently used to deploy a Kubernetes cluster to Azure.
 
+# Onboarding
+
+For full onboarding follow [our documentation](https://equal-vote.github.io/star-server/contributions/Infrastructure/2_devops_local_setup.html)
+
 # Bootstrapping
 
 Based on:

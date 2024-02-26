@@ -34,6 +34,8 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   name                = "equalvote"
   resource_group_name = azurerm_resource_group.equalvote.name
   dns_prefix          = "equalvote"
+  oidc_issuer_enabled = true
+  workload_identity_enabled = true
 
   identity {
     type = "SystemAssigned"
@@ -49,6 +51,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     network_plugin    = "kubenet"
     load_balancer_sku = "standard"
   }
+
 }
 
 resource "azurerm_virtual_network" "equalvote" {

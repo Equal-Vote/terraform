@@ -45,6 +45,13 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     name       = "agentpool"
     vm_size    = "Standard_B2as_v2"
     node_count = var.node_count
+
+    # This "optional" setting is needed if you ever want to actually change one
+    # of like 15 other settings in your cluster. More Azure nonsense - just
+    # create a new node pool with timestamp to make it unique or something. WTF
+    # Azure!
+    temporary_name_for_rotation = "wtfazure"
+
   }
 
   network_profile {

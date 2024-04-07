@@ -1,3 +1,4 @@
+# Not using this yet, but I suspect we will need it for secrets in tfvars files.
 creation_rules:
-  - path_regex: secret.*\.yaml(.dec)?$
-    azure_keyvault: https://equalvote.vault.azure.net/keys/sops/ab881b6e5cbb4d6897600713603ba44e 
+  - path_regex: .*\.tfvars
+    azure_keyvault: https://equalvote.vault.azure.net/keys/sops/92a0fe05a77b4a3787d10bbd444f19c6

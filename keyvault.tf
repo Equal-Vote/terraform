@@ -26,6 +26,16 @@ resource "azurerm_key_vault" "equalvote" {
   # It's probably dumb to add the "evans" user (object_id ending in c5e7)
   # directly. There's probably some smart way to do it with roles or something.
   # I am not an Azure expert.
+
+  # TODO: DANGER! This code originally had `object_id =
+  # data.azurerm_client_config.current.object_id` in the first access_policy
+  # below. This sets the object_id to whatever entity runs `terraform apply`,
+  # so if someone runs it locally, it will set the access_policy to their Azure
+  # User. This breaks the pipeline, because the first access_policy is for the
+  # `terraform` Application. To work around this issue, I've hard-coded the
+  # object_id to the `terraform` Application. The proper fix is to do a data
+  # lookup on the `terraform` Application and get it's object_id.
+
   access_policy = [
     {
       application_id          = ""
@@ -43,7 +53,7 @@ resource "azurerm_key_vault" "equalvote" {
         "SetRotationPolicy",
         "Update"
       ]
-      object_id = data.azurerm_client_config.current.object_id
+      object_id = "e4536f07-8f5a-4501-be90-6a3d2a09b0f3"
       secret_permissions = [
         "Set"
       ]

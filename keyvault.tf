@@ -23,28 +23,57 @@ resource "azurerm_key_vault" "equalvote" {
   sku_name                   = "standard"
   soft_delete_retention_days = 7
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    key_permissions = [
-      "Create",
-      "Decrypt",
-      "Delete",
-      "Encrypt",
-      "Get",
-      "GetRotationPolicy",
-      "List",
-      "Purge",
-      "Recover",
-      "SetRotationPolicy",
-      "Update"
-    ]
-
-    secret_permissions = [
-      "Set"
-    ]
-  }
+  # It's probably dumb to add the "evans" user (object_id ending in c5e7)
+  # directly. There's probably some smart way to do it with roles or something.
+  # I am not an Azure expert.
+  access_policy = [
+    {
+      application_id          = ""
+      certificate_permissions = []
+      key_permissions = [
+        "Create",
+        "Decrypt",
+        "Delete",
+        "Encrypt",
+        "Get",
+        "GetRotationPolicy",
+        "List",
+        "Purge",
+        "Recover",
+        "SetRotationPolicy",
+        "Update"
+      ]
+      object_id = data.azurerm_client_config.current.object_id
+      secret_permissions = [
+        "Set"
+      ]
+      storage_permissions = []
+      tenant_id           = data.azurerm_client_config.current.tenant_id
+    },
+    {
+      application_id          = ""
+      certificate_permissions = []
+      key_permissions = [
+        "Get",
+        "List",
+        "Update",
+        "Create",
+        "Delete",
+        "Recover",
+        "Decrypt",
+        "Encrypt",
+        "Purge",
+        "GetRotationPolicy",
+        "SetRotationPolicy",
+      ]
+      object_id = "60552b74-872f-4449-b8ab-bc528a45c5e7"
+      secret_permissions = [
+        "Set",
+      ]
+      storage_permissions = []
+      tenant_id           = data.azurerm_client_config.current.tenant_id
+    }
+  ]
 }
 
 resource "azurerm_key_vault_key" "sops" {

@@ -30,10 +30,12 @@ resource "azurerm_resource_group" "equalvote" {
 }
 
 resource "azurerm_kubernetes_cluster" "equalvote" {
-  location                  = azurerm_resource_group.equalvote.location
-  name                      = "equalvote"
-  resource_group_name       = azurerm_resource_group.equalvote.name
-  dns_prefix                = "equalvote"
+  location            = azurerm_resource_group.equalvote.location
+  name                = "equalvote"
+  resource_group_name = azurerm_resource_group.equalvote.name
+  dns_prefix          = "equalvote"
+
+  # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
 

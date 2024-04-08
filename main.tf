@@ -34,6 +34,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   name                = "equalvote"
   resource_group_name = azurerm_resource_group.equalvote.name
   dns_prefix          = "equalvote"
+  kubernetes_version  = "1.28.5"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
@@ -54,11 +55,6 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     # Azure!
     temporary_name_for_rotation = "wtfazure"
 
-  }
-
-  network_profile {
-    network_plugin    = "kubenet"
-    load_balancer_sku = "standard"
   }
 
 }

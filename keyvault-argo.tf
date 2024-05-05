@@ -1,6 +1,3 @@
-# This was throwing a duplicate resource name error, so I appended -extend to the alias
-data "azurerm_client_config" "current-extended" {}
-
 # This is the resource that I see in the portal, and referenced in the script.
 # I could not find it listed in this Terraform Repo. Probably can just run a terraform import to link the resource with this code block.
 resource "azurerm_key_vault" "equalvote-argocd" {

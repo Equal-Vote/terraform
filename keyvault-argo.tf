@@ -15,7 +15,7 @@ resource "azurerm_user_assigned_identity" "argocd-identity" {
   location            = azurerm_resource_group.equalvote.location
 }
 
-# THis resource encapsulates the 'az keyvault set-policy' command in your script
+# This resource encapsulates the 'az keyvault set-policy' command in your script
 resource "azurerm_key_vault_access_policy" "argocd-policy" {
   key_vault_id = azurerm_key_vault.equalvote-argocd.id
 

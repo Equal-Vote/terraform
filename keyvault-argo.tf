@@ -8,6 +8,7 @@ resource "azurerm_key_vault" "equalvote-argocd" {
 }
 
 # This is the identity that is created by the script
+# Imported in the imports.tf file
 resource "azurerm_user_assigned_identity" "argocd-identity" {
   name                = "argocd"
   resource_group_name = azurerm_resource_group.equalvote.name

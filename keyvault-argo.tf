@@ -1,5 +1,4 @@
-# This is the resource that I see in the portal, and referenced in the script.
-# I could not find it listed in this Terraform Repo. Probably can just run a terraform import to link the resource with this code block.
+# This is imported in the imports.tf file in this same directory
 resource "azurerm_key_vault" "equalvote-argocd" {
   name                = "equalvote-argocd"
   location            = azurerm_resource_group.equalvote.location

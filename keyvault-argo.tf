@@ -91,6 +91,7 @@ resource "kubernetes_service_account" "aks-argocd" {
 
 # Worked through this with Arturo at the tueaday live session.
 # Adds in the federated credential that was last created in Arturos script.
+# Not going to import this one as well.
 resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
   name                = "kubernetes-federated-credential"
   resource_group_name = azurerm_resource_group.equalvote.name

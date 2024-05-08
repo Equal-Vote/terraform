@@ -89,32 +89,26 @@ resource "kubernetes_service_account" "aks-argocd" {
   }
 }
 
+# Worked through this with Arturo at the tueaday live session.
+# Adds in the federated credential that was last created in Arturos script.
+resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
+  name                = "kubernetes-federated-credential"
+  resource_group_name = azurerm_resource_group.equalvote.name
+  subject             = "system:serviceaccount:argocd:aks-argocd"
 
-## This is the last resource that I need to create below, but it is a little more involved than the previous stuff I made.
-## Uncomment it to better see what I have so far.
-## I only left it commented out because it causes terraform plan to brick if I leave it uncommented out.
+  depends_on = [
+    azurerm_key_vault.equalvote-argocd,
+    azurerm_user_assigned_identity.argocd-identity
+  ]
 
+  # Found this example that says we should be mapping to the ID and not principal_id
+  parent_id = azurerm_user_assigned_identity.argocd-identity.id
 
-# resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
-#   name                = "kubernetes-federated-credential"
-#   resource_group_name = azurerm_resource_group.equalvote.name
-#   subject             = "system:serviceaccount:argocd:aks-argocd"
+  # Found this through the docuumentation here:
+  # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#oidc_issuer_url
+  issuer = azurerm_kubernetes_cluster.equalvote.oidc_issuer_url
 
-#   depends_on = [
-#     azurerm_key_vault.equalvote-argocd,
-#     azurerm_user_assigned_identity.argocd-identity
-#   ]
+  # Found this wit Arturo through the CLI
+  audience = ["api://AzureADTokenExchange"]
 
-
-#   # This part could be wrong. The docs specifically say parent ID
-#   # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/federated_identity_credential#parent_id
-#   # However, based off what I saw in the command, I assume that we are attaching the ID of the policy when creating this fed cred resource
-#   parent_id = azurerm_user_assigned_identity.argocd-identity.principal_id
-
-#   # I still have to figure out how to translate the query in the script to ghet the clusters issuerURL
-#   issuer = ""
-
-#   # I do not know what this is, but it is late so I will look more into it tomorrow
-#   audience = ""
-
-# }
+}

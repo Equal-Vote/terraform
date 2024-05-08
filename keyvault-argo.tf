@@ -16,6 +16,7 @@ resource "azurerm_user_assigned_identity" "argocd-identity" {
 }
 
 # This resource encapsulates the 'az keyvault set-policy' command in your script
+# Recreating this policy as Arturo has instructed that he will delete the existent one
 resource "azurerm_key_vault_access_policy" "argocd-policy" {
   key_vault_id = azurerm_key_vault.equalvote-argocd.id
 

@@ -59,7 +59,7 @@ resource "azurerm_key_vault_access_policy" "argocd-policy" {
 
 # Super unsure about this one because I am getting it from the generalized docs on terraform and not Azure
 # https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account.html
-resource "kubernetes_service_account" "aks_argocd" {
+resource "kubernetes_service_account" "aks-argocd" {
   metadata {
     name      = "aks-argocd"
     namespace = "argocd"

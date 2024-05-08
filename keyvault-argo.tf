@@ -15,6 +15,20 @@ resource "azurerm_user_assigned_identity" "argocd-identity" {
   location            = azurerm_resource_group.equalvote.location
 }
 
+# Imported in the Terraform imports
+resource "azurerm_key_vault_key" "sops-key" {
+  name         = "sops-key"
+  key_vault_id = azurerm_key_vault.equalvote-argocd.id
+  key_type     = "RSA"
+  key_size     = 2048
+
+  key_opts = [
+    "encrypt",
+    "decrypt",
+  ]
+
+}
+
 # This resource encapsulates the 'az keyvault set-policy' command in your script
 # Recreating this policy as Arturo has instructed that he will delete the existent one
 resource "azurerm_key_vault_access_policy" "argocd-policy" {

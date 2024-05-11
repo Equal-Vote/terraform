@@ -89,27 +89,27 @@ resource "kubernetes_service_account" "aks-argocd" {
   }
 }
 
-# Worked through this with Arturo at the tueaday live session.
-# Adds in the federated credential that was last created in Arturos script.
-# Not going to import this one as well.
-resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
-  name                = "kubernetes-federated-credential"
-  resource_group_name = azurerm_resource_group.equalvote.name
-  subject             = "system:serviceaccount:argocd:aks-argocd"
+# # Worked through this with Arturo at the tueaday live session.
+# # Adds in the federated credential that was last created in Arturos script.
+# # Not going to import this one as well.
+# resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
+#   name                = "kubernetes-federated-credential"
+#   resource_group_name = azurerm_resource_group.equalvote.name
+#   subject             = "system:serviceaccount:argocd:aks-argocd"
 
-  depends_on = [
-    azurerm_key_vault.equalvote-argocd,
-    azurerm_user_assigned_identity.argocd-identity
-  ]
+#   depends_on = [
+#     azurerm_key_vault.equalvote-argocd,
+#     azurerm_user_assigned_identity.argocd-identity
+#   ]
 
-  # Found this example that says we should be mapping to the ID and not principal_id
-  parent_id = azurerm_user_assigned_identity.argocd-identity.id
+#   # Found this example that says we should be mapping to the ID and not principal_id
+#   parent_id = azurerm_user_assigned_identity.argocd-identity.id
 
-  # Found this through the docuumentation here:
-  # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#oidc_issuer_url
-  issuer = azurerm_kubernetes_cluster.equalvote.oidc_issuer_url
+#   # Found this through the docuumentation here:
+#   # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#oidc_issuer_url
+#   issuer = azurerm_kubernetes_cluster.equalvote.oidc_issuer_url
 
-  # Found this wit Arturo through the CLI
-  audience = ["api://AzureADTokenExchange"]
+#   # Found this wit Arturo through the CLI
+#   audience = ["api://AzureADTokenExchange"]
 
-}
+# }

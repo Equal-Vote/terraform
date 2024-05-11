@@ -97,10 +97,10 @@ resource "azurerm_federated_identity_credential" "kubernetes-federated-credentia
   resource_group_name = azurerm_resource_group.equalvote.name
   subject             = "system:serviceaccount:argocd:aks-argocd"
 
-  depends_on = [
-    azurerm_key_vault.equalvote-argocd,
-    azurerm_user_assigned_identity.argocd-identity
-  ]
+  # depends_on = [
+  #   azurerm_key_vault.equalvote-argocd,
+  #   azurerm_user_assigned_identity.argocd-identity
+  # ]
 
   # Found this example that says we should be mapping to the ID and not principal_id
   parent_id = azurerm_user_assigned_identity.argocd-identity.id

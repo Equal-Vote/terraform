@@ -1,3 +1,4 @@
+# TODO: Merge this with keyvault-argo.tf - this keyvault.tf is no longer needed - we're using the sops key in the other keyvault.
 # Based on:
 # https://techcommunity.microsoft.com/t5/azure-global/gitops-and-secret-management-with-aks-flux-cd-sops-and-azure-key/ba-p/2280068
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault_key

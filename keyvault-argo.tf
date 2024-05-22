@@ -73,21 +73,25 @@ resource "azurerm_key_vault_access_policy" "argocd-policy" {
 
 # Super unsure about this one because I am getting it from the generalized docs on terraform and not Azure
 # https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account.html
-resource "kubernetes_service_account" "aks-argocd" {
-  metadata {
-    name      = "aks-argocd"
-    namespace = "argocd"
-
-    annotations = {
-      "azure.workload.identity/client-id" = azurerm_user_assigned_identity.argocd-identity.client_id
-      "azure.workload.identity/tenant-id" = azurerm_user_assigned_identity.argocd-identity.tenant_id
-    }
-
-    labels = {
-      "azure.workload.identity/use" = "true"
-    }
-  }
-}
+#
+# TODO: Chicken and egg problem. The service account needs the annotations, but
+# Terraform doesn't currently have access to the cluster to create the service
+# account.
+#resource "kubernetes_service_account" "aks-argocd" {
+#  metadata {
+#    name      = "aks-argocd"
+#    namespace = "argocd"
+#
+#    annotations = {
+#      "azure.workload.identity/client-id" = azurerm_user_assigned_identity.argocd-identity.client_id
+#      "azure.workload.identity/tenant-id" = azurerm_user_assigned_identity.argocd-identity.tenant_id
+#    }
+#
+#    labels = {
+#      "azure.workload.identity/use" = "true"
+#    }
+#  }
+#}
 
 # Worked through this with Arturo at the tueaday live session.
 # Adds in the federated credential that was last created in Arturos script.

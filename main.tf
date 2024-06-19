@@ -82,3 +82,11 @@ resource "azurerm_dns_zone" "sandbox" {
   name                = "sandbox.star.vote"
   resource_group_name = azurerm_resource_group.equalvote.name
 }
+resource "azurerm_dns_zone" "prod" {
+  name                = "prod.equal.vote"
+  resource_group_name = azurerm_resource_group.equalvote.name
+}
+resource "azurerm_dns_zone" "dev" {
+  name                = "dev.equal.vote"
+  resource_group_name = azurerm_resource_group.equalvote.name
+}

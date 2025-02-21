@@ -26,9 +26,9 @@ env:
 jobs:
   opentofu:
     runs-on: ubuntu-latest
-    env:
-      #this is needed since we are running terraform with read-only permissions
-      ARM_SKIP_PROVIDER_REGISTRATION: true
+    # env:
+    #   #this is needed since we are running terraform with read-only permissions
+    #   ARM_SKIP_PROVIDER_REGISTRATION: true
     steps:
     - uses: actions/checkout@v4
     - uses: actions/cache@v4

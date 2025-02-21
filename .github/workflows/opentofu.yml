@@ -47,11 +47,11 @@ jobs:
       continue-on-error: true
     - id: init
       if: steps.cache.outputs.cache-hit != 'true'
-      run: tofu init -var-file=prod.tfvars
+      run: tofu init
     - id: validate
       run: tofu validate -no-color
     - id: plan
-      run: tofu plan -var-file=prod.tfvars -no-color -input=false -compact-warnings -out=plan.file
+      run: tofu plan -no-color -input=false -compact-warnings -out=plan.file
       continue-on-error: true
     - uses: actions/github-script@v6
       if: github.event_name == 'pull_request'

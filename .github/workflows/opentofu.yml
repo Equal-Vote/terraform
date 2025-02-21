@@ -30,10 +30,6 @@ jobs:
       #this is needed since we are running terraform with read-only permissions
       ARM_SKIP_PROVIDER_REGISTRATION: true
     steps:
-    - uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: us-east-2
-        role-to-assume: arn:aws:iam::471112796903:role/github-actions-prod-tf-Role-op9nZF6VBumT
     - uses: actions/checkout@v4
     - uses: actions/cache@v4
       id: cache

@@ -41,7 +41,7 @@ jobs:
           ${{ runner.os }}-
     - uses: opentofu/setup-opentofu@v1
       with:
-        tofu_version: 1.8.2
+        tofu_version: 1.9.0
     - id: fmt
       run: tofu fmt -recursive -check
       continue-on-error: true

@@ -1,0 +1,93 @@
+# Based on:
+# The example in https://github.com/opentofu/setup-opentofu
+# https://cd.foundation/blog/2024/02/28/how-to-deploy-infrastructure-in-ci-cd-using-opentofu/
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+# Secrets are in https://github.com/Equal-Vote/terraform/settings/secrets/actions
+env:
+  ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+  ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+
+jobs:
+  opentofu:
+    runs-on: ubuntu-latest
+    # env:
+    #   #this is needed since we are running terraform with read-only permissions
+    #   ARM_SKIP_PROVIDER_REGISTRATION: true
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v4
+      id: cache
+      with:
+        path: |
+          .terraform
+        key: ${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+        restore-keys: |
+          ${{ runner.os }}-
+    - uses: opentofu/setup-opentofu@v1
+      with:
+        tofu_version: 1.9.0
+    - id: fmt
+      run: tofu fmt -recursive -check
+      continue-on-error: true
+    - id: init
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: tofu init
+    - id: validate
+      run: tofu validate -no-color
+    - id: plan
+      run: tofu plan -no-color -input=false -compact-warnings -out=plan.file
+      continue-on-error: true
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### OpenTofu Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### OpenTofu Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### OpenTofu Validation 🤖\`${{ steps.validate.outcome }}\`
+          <details><summary>Validation Output</summary>
+
+          \`\`\`\n
+          ${{ steps.validate.outputs.stdout }}
+          \`\`\`
+
+          </details>
+
+          #### OpenTofu Plan 📖\`${{ steps.plan.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>
+
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+    - if: github.ref == 'refs/heads/main'
+      run: tofu apply -no-color -input=false -compact-warnings plan.file

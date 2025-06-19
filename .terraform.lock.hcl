@@ -2,18 +2,17 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/hashicorp/azurerm" {
-  version = "4.20.0"
+  version = "4.33.0"
   hashes = [
-    "h1:3BIZTtSgEKMR1IL4VYuljpewC9ErOuyuNAQjNu2WwVI=",
-    "zh:007eb4a292a221a2046bd51cd35957a715b72128c74d9bfde72a015b99318d61",
-    "zh:668421cfa28fe8008fd96e9508a81a11a97a53834861189dcf2cdae508139b68",
-    "zh:725db684c166cc7b985cdd194b9c512c145d4fdb6a75c15b30c49c2e37451cc6",
-    "zh:8624ec0012ab47dd7802bc8485b1dcc4dcc02ed7d2022679ba1492a7dadd8d72",
-    "zh:8929279a270ebe52ae045deae04b078b1d1e6101c0dd03020ac342cbef8dd437",
-    "zh:97cf60ca4ed3bc0209c85b758f9c6d420a4e8fd0cc1c63d43e5154b8be8a2162",
-    "zh:bdd82ce04d60068f33c25e734ec612c5b0a8f60b42dee074e6d013ba345409db",
-    "zh:d37980276085d8e2df99b061b212929caab09b1866eae255df95e7e52f2cc40c",
-    "zh:dd4e7f818e70a39741ccd1dae79580700ae15f2954241050997569364ad35b4c",
-    "zh:f98014e4f817fb1b79aabf2dabcdb38ce488e22afc41baf14516936cbde3d44e",
+    "h1:DZ1ItoZWttEh0LimJhOBIyrW1c+JFY/uvdcfWKVhPkk=",
+    "zh:20839226e1bfeeb394bfa1995688d7c04a198fc8bccfdd8ef35ff452560d646a",
+    "zh:65b93074706be7ed9833bf865e9fc179058634e498fc9a3bc09b5178985b016b",
+    "zh:733249083cc4355a1878c4e18572b78ed95ec43cce31a216aab570a59deea56e",
+    "zh:906ca291d8a37ecce386835d671aaeb97c2ec311333d9881d2057601a8a0d431",
+    "zh:a40cf97c27520102dc552bcd5c4c4adb4f8bf823c00a7a9f549b34117c8b4ec7",
+    "zh:c380c6fe40030c6187cd56bbd07bd9b3c444ae725bfe3570cb9a7a3e0b555fc1",
+    "zh:da62bacaa150d09db471a42ad06990e772b4e9d2b2e9e16f3bf191ef537439e1",
+    "zh:f01e65acb6b9322ca209a1546b57764fa2cfa589afc733bc8eddd4054ded50e2",
+    "zh:f961333e078373da825fb9cc706607c57744fc45e2fa0c2d75dac59be08798d0",
   ]
 }

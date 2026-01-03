@@ -7,9 +7,8 @@ resource "azurerm_storage_account" "storage" {
   account_replication_type = "LRS" # Locally redundant storage (the cheapest option)
 }
 
-resource "azurerm_storage_container" "candidate_photos" {
-  name                 = "candidate_photos"
-  storage_account_id   = azurerm_storage_account.storage.id
+resource "azurerm_storage_container" "candidate-photos" {
+  name                  = "candidate-photos"
+  storage_account_id    = azurerm_storage_account.storage.id
   container_access_type = "blob"
 }
-

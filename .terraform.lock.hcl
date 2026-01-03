@@ -4,7 +4,7 @@
 provider "registry.opentofu.org/hashicorp/azurerm" {
   version = "4.57.0"
   hashes = [
-    "h1:Yy4MhvH07TS4LDXmBNLOIYE8lQCC0585GhTSRAOjlII=",
+    "h1:3QHcmejWIQIgIbaiq7kIay1C6ymEObeO358CpI9pLbc=",
     "zh:180d2585d2f5f88c6a2308ea3f8b2749e16a1d0c3fe91f153743534d2b672dd5",
     "zh:1cd5beca4e0c4c32d3a75cd8db9491e6b64367e04dace4569ae7cd5414cac15d",
     "zh:5508c45012c480fabf085f4f3b7a5bc904bb968f524484b3e75f7940ede12dd5",

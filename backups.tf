@@ -4,7 +4,7 @@
 # }
 
 resource "azurerm_data_protection_backup_vault" "equalvote" {
-  name                = "equalvote-backup-vault"
+  name                = "evanstestequalvote-backup-vault"
   resource_group_name = azurerm_resource_group.equalvote.name
   location            = azurerm_resource_group.equalvote.location
   datastore_type      = "VaultStore"

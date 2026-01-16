@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "storage" {
-  name                     = "defaultstorageacct"
+  name                     = "bettervoting"
   resource_group_name      = azurerm_resource_group.equalvote.name
   location                 = azurerm_resource_group.equalvote.location
   account_tier             = "Standard"

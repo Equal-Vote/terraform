@@ -62,13 +62,6 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
 }
 
-resource "azurerm_kubernetes_cluster_node_pool" "green" {
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.equalvote.id
-  name                  = "green"
-  vm_size               = "Standard_B2ps_v2"
-  node_count            = 1
-}
-
 resource "azurerm_virtual_network" "equalvote" {
   name                = "equalvote"
   address_space       = ["10.0.0.0/16"]

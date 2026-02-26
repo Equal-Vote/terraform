@@ -37,7 +37,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   # You can get available versions with this command:
   # az aks get-upgrades --resource-group equalvote --name equalvote --output table
-  kubernetes_version = "1.30.12"
+  kubernetes_version = "1.31.13"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true

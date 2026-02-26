@@ -48,7 +48,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   }
 
   default_node_pool {
-    name       = "default"
+    name       = "agentpool"
     vm_size    = "Standard_B2ps_v2"
     node_count = var.node_count
 

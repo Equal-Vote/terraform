@@ -48,9 +48,10 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   }
 
   default_node_pool {
-    name       = "agentpool"
-    vm_size    = "Standard_B2ps_v2"
-    node_count = var.node_count
+    name                 = "agentpool"
+    vm_size              = "Standard_B2ps_v2"
+    node_count           = var.node_count
+    orchestrator_version = "1.31"
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just

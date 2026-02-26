@@ -97,9 +97,8 @@ resource "azurerm_key_vault_access_policy" "argocd-policy" {
 # Adds in the federated credential that was last created in Arturos script.
 # Not going to import this one as well.
 resource "azurerm_federated_identity_credential" "kubernetes-federated-credential" {
-  name                = "kubernetes-federated-credential"
-  resource_group_name = azurerm_resource_group.equalvote.name
-  subject             = "system:serviceaccount:argocd:aks-argocd"
+  name    = "kubernetes-federated-credential"
+  subject = "system:serviceaccount:argocd:aks-argocd"
 
   # depends_on = [
   #   azurerm_key_vault.equalvote-argocd,

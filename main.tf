@@ -48,9 +48,9 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   }
 
   default_node_pool {
-    name       = "blue"
+    name       = "default"
     vm_size    = "Standard_B2ps_v2"
-    node_count = var.blue_node_count
+    node_count = var.node_count
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just
@@ -60,13 +60,6 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   }
 
-}
-
-resource "azurerm_kubernetes_cluster_node_pool" "green" {
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.equalvote.id
-  name                  = "green"
-  vm_size               = "Standard_B2ps_v2"
-  node_count            = var.green_node_count
 }
 
 resource "azurerm_virtual_network" "equalvote" {

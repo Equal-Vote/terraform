@@ -5,7 +5,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.equalvote.kube_config[0].cluster_ca_certificate)
 }
 
-resource "kubernetes_cluster_role_binding" "devops_cluster_admin" {
+resource "kubernetes_cluster_role_binding_v1" "devops_cluster_admin" {
   metadata {
     name = "devops-cluster-admin"
   }
@@ -21,7 +21,7 @@ resource "kubernetes_cluster_role_binding" "devops_cluster_admin" {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "developer_view" {
+resource "kubernetes_cluster_role_binding_v1" "developer_view" {
   metadata {
     name = "developer-view"
   }

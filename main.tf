@@ -31,8 +31,8 @@ resource "azurerm_resource_group" "equalvote" {
   location = "West US 2"
 }
 
-resource "azuread_group" "developer" {
-  display_name     = "Developer"
+resource "azuread_group" "developers" {
+  display_name     = "Developers"
   security_enabled = true
 }
 
@@ -83,11 +83,11 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
 }
 
-# Azure RBAC: Allow DevOps and Developer groups to get credentials
-resource "azurerm_role_assignment" "developer_aks_cluster_user" {
+# Azure RBAC: Allow DevOps and Developers groups to get credentials
+resource "azurerm_role_assignment" "developers_aks_cluster_user" {
   scope                = azurerm_kubernetes_cluster.equalvote.id
   role_definition_name = "Azure Kubernetes Service Cluster User Role"
-  principal_id         = azuread_group.developer.object_id
+  principal_id         = azuread_group.developers.object_id
 }
 
 resource "azurerm_role_assignment" "devops_aks_cluster_user" {

@@ -21,9 +21,9 @@ resource "kubernetes_cluster_role_binding_v1" "devops_cluster_admin" {
   }
 }
 
-resource "kubernetes_cluster_role_binding_v1" "developer_view" {
+resource "kubernetes_cluster_role_binding_v1" "developers_view" {
   metadata {
-    name = "developer-view"
+    name = "developers-view"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -32,7 +32,7 @@ resource "kubernetes_cluster_role_binding_v1" "developer_view" {
   }
   subject {
     kind      = "Group"
-    name      = azuread_group.developer.display_name
+    name      = azuread_group.developers.display_name
     api_group = "azuread.io"
   }
 }

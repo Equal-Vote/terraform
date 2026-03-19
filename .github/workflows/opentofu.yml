@@ -1,15 +1,15 @@
 # Based on:
-# The example in https://github.com/opentofu/setup-opentofu
+# https://github.com/opentofu/setup-opentofu
 # https://cd.foundation/blog/2024/02/28/how-to-deploy-infrastructure-in-ci-cd-using-opentofu/
 
+# When we create a pull request (PR) to the main branch, this workflow runs `tofu plan`, and adds the output as a comment to the PR. If the plan looks good, we merge (ie. push) the code to the main branch. On push to main, this runs a `tofu apply`.
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
-
+      - main
 permissions:
   id-token: write
   contents: read
@@ -30,64 +30,46 @@ jobs:
     #   #this is needed since we are running terraform with read-only permissions
     #   ARM_SKIP_PROVIDER_REGISTRATION: true
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-      id: cache
-      with:
-        path: |
-          .terraform
-        key: ${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
-        restore-keys: |
-          ${{ runner.os }}-
-    - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f # v1.0.8
-      with:
-        tofu_version: 1.9.0
-    - id: fmt
-      run: tofu fmt -recursive -check
-      continue-on-error: true
-    - id: init
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: tofu init
-    - id: validate
-      run: tofu validate -no-color
-    - id: plan
-      run: tofu plan -no-color -input=false -compact-warnings -out=plan.file
-      continue-on-error: true
-    - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
-      if: github.event_name == 'pull_request'
-      env:
-        PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const output = `#### OpenTofu Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### OpenTofu Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### OpenTofu Validation 🤖\`${{ steps.validate.outcome }}\`
-          <details><summary>Validation Output</summary>
-
-          \`\`\`\n
-          ${{ steps.validate.outputs.stdout }}
-          \`\`\`
-
-          </details>
-
-          #### OpenTofu Plan 📖\`${{ steps.plan.outcome }}\`
-
-          <details><summary>Show Plan</summary>
-
-          \`\`\`\n
-          ${process.env.PLAN}
-          \`\`\`
-
-          </details>
-
-          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
-
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
-    - if: github.ref == 'refs/heads/main'
-      run: tofu apply -no-color -input=false -compact-warnings plan.file
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: opentofu/setup-opentofu@fc711fa910b93cba0f3fbecaafc9f42fd0c411cb # v2.0.0
+        with:
+          # Prefer `tofu_version_file` over `tofu_version`, because the version file ensures that both local and workflow runs are locked to the same version.
+          tofu_version_file: .opentofu-version
+      # https://github.com/magnetikonline/terraform-github-action-cache-example
+      - name: Configure Terraform plugin cache
+        run: |
+          echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >>"$GITHUB_ENV"
+          mkdir --parents "$HOME/.terraform.d/plugin-cache"
+      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: |
+            ~/.terraform.d/plugin-cache
+          key: terraform-${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            terraform-${{ runner.os }}-
+      - id: fmt
+        run: tofu fmt -recursive -check
+        continue-on-error: true
+      - id: init
+        run: tofu init
+      - id: validate
+        run: tofu validate -no-color
+      - id: plan
+        run: tofu plan -no-color -input=false -out=plan.file
+        # We need to continue-on-error here so we can print the tofu plan output even on failure.
+        continue-on-error: true
+      - run: |
+          echo "${{ steps.plan.outputs.stdout }}" > plan-output.txt
+          echo "${{ steps.plan.outputs.stderr }}" >> plan-output.txt
+        if: github.event_name == 'pull_request'
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: "const fs = require('fs'); const planOutput = fs.readFileSync('plan-output.txt', 'utf8'); const output = `#### OpenTofu Format and Style \\`${{ steps.fmt.outcome }}\\`\\n#### OpenTofu Initialization ⚙️\\`${{ steps.init.outcome }}\\`\\n#### OpenTofu Validation \\`${{ steps.validate.outcome }}\\`\\n<details><summary>Validation Output</summary>\\n\\n\\`\\`\\`\\n\\n${{ steps.validate.outputs.stdout }}\\n\\`\\`\\`\\n\\n</details>\\n\\n#### OpenTofu Plan \\`${{ steps.plan.outcome }}\\`\\n\\n<details><summary>Show Plan</summary>\\n\\n\\`\\`\\`\\n\\n${planOutput}\\n\\`\\`\\`\\n\\n</details>\\n\\n*Pusher: @${{ github.actor }}, Action: \\`${{ github.event_name }}\\`, Working Directory: \\`${{ env.tf_actions_working_dir }}\\`, Workflow: \\`${{ github.workflow }}\\`*`; github.rest.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body: output })"
+      # We need the workflow to show as failed when the plan fails, so we're breaking it here.
+      - name: Check plan result
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+      - if: github.ref == 'refs/heads/main'
+        run: tofu apply -no-color -input=false plan.file

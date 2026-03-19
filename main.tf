@@ -4,8 +4,7 @@
 terraform {
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "4.61.0"
+      source = "registry.opentofu.org/hashicorp/azurerm"
     }
     kubernetes = {
       source = "registry.opentofu.org/hashicorp/kubernetes"

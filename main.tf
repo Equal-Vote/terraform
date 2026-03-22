@@ -93,12 +93,6 @@ resource "azurerm_role_assignment" "developers_aks_cluster_user" {
   principal_id         = azuread_group.developers.object_id
 }
 
-resource "azurerm_role_assignment" "devops_aks_cluster_user" {
-  scope                = azurerm_kubernetes_cluster.equalvote.id
-  role_definition_name = "Azure Kubernetes Service Cluster User Role"
-  principal_id         = azuread_group.devops.object_id
-}
-
 # Azure RBAC: Allow DevOps group to manage cluster (AKS admin role)
 resource "azurerm_role_assignment" "devops_aks_cluster_admin" {
   scope                = azurerm_kubernetes_cluster.equalvote.id

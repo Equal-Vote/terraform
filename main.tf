@@ -4,7 +4,10 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source = "registry.opentofu.org/hashicorp/azurerm"
+    }
+    kubernetes = {
+      source = "registry.opentofu.org/hashicorp/kubernetes"
     }
   }
   backend "azurerm" {
@@ -24,9 +27,21 @@ provider "azurerm" {
   }
 }
 
+provider "azuread" {}
+
 resource "azurerm_resource_group" "equalvote" {
   name     = "equalvote"
   location = "West US 2"
+}
+
+resource "azuread_group" "developers" {
+  display_name     = "Developers"
+  security_enabled = true
+}
+
+resource "azuread_group" "devops" {
+  display_name     = "DevOps"
+  security_enabled = true
 }
 
 resource "azurerm_kubernetes_cluster" "equalvote" {
@@ -42,6 +57,14 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
+
+  # Enable Kubernetes RBAC with Azure AD integration
+  role_based_access_control_enabled = true
+  local_account_disabled            = true
+
+  azure_active_directory_role_based_access_control {
+    admin_group_object_ids = [azuread_group.devops.id]
+  }
 
   identity {
     type = "SystemAssigned"
@@ -61,6 +84,20 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   }
 
+}
+
+# Azure RBAC: Allow DevOps and Developers groups to get credentials
+resource "azurerm_role_assignment" "developers_aks_cluster_user" {
+  scope                = azurerm_kubernetes_cluster.equalvote.id
+  role_definition_name = "Azure Kubernetes Service Cluster User Role"
+  principal_id         = azuread_group.developers.object_id
+}
+
+# Azure RBAC: Allow DevOps group to manage cluster (AKS admin role)
+resource "azurerm_role_assignment" "devops_aks_cluster_admin" {
+  scope                = azurerm_kubernetes_cluster.equalvote.id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id         = azuread_group.devops.object_id
 }
 
 resource "azurerm_virtual_network" "equalvote" {

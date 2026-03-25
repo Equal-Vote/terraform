@@ -63,7 +63,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
   local_account_disabled            = true
 
   azure_active_directory_role_based_access_control {
-    admin_group_object_ids = [azuread_group.devops.id]
+    admin_group_object_ids = [regex("[^/]+$", azuread_group.devops.id)]
   }
 
   identity {

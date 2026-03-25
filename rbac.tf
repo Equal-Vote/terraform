@@ -16,8 +16,8 @@
 #   }
 #   subject {
 #     kind      = "Group"
-#     name      = azuread_group.devops.display_name
-#     api_group = "azuread.io"
+#     name      = azuread_group.devops.object_id
+#     api_group = "rbac.authorization.k8s.io"
 #   }
 # }
 #
@@ -32,7 +32,7 @@
 #   }
 #   subject {
 #     kind      = "Group"
-#     name      = azuread_group.developers.display_name
-#     api_group = "azuread.io"
+#     name      = azuread_group.developers.object_id
+#     api_group = "rbac.authorization.k8s.io"
 #   }
 # }

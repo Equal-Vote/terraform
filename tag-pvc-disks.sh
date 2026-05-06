@@ -18,7 +18,7 @@ fi
 
 # Get all PVC-backed managed disks (CSI driver names them with kubernetes-dynamic-pvc-* prefix)
 DISK_IDS=$(az disk list -g "$NODE_RG" \
-  --query "[?starts_with(name, 'kubernetes-dynamic-pvc-')].id" \
+  --query "[?starts_with(name, 'pvc-')].id" \
   -o tsv)
 
 if [ -z "$DISK_IDS" ]; then

@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Discovers all PVCs in the cluster and tags the corresponding Azure managed disks.
-# Outputs JSON with disk IDs for consumption by Terraform external data source.
+# Generates a tfvars file with disk IDs for use by Terraform.
 
 set -euo pipefail
 
 RESOURCE_GROUP="${1:?Resource group required}"
 CLUSTER_NAME="${2:?Cluster name required}"
+OUTPUT_FILE="${3:-tagged-disks.tfvars}"
 
 # Get the AKS node resource group (where managed disks live)
 NODE_RG=$(az aks show -g "$RESOURCE_GROUP" -n "$CLUSTER_NAME" --query nodeResourceGroup -o tsv)
@@ -55,16 +56,13 @@ if [ ${#DISK_IDS[@]} -eq 0 ]; then
   exit 1
 fi
 
-# Output JSON for Terraform external data source
-JSON="{\"disk_ids\":["
-FIRST=true
-for id in "${DISK_IDS[@]}"; do
-  if [ "$FIRST" = true ]; then
-    FIRST=false
-  else
-    JSON+=","
-  fi
-  JSON+="\"$id\""
-done
-JSON+="]}"
-echo "$JSON"
+# Generate tfvars file
+{
+  echo "disk_ids = ["
+  for id in "${DISK_IDS[@]}"; do
+    echo "  \"$id\","
+  done
+  echo "]"
+} > "$OUTPUT_FILE"
+
+echo "Generated $OUTPUT_FILE with ${#DISK_IDS[@]} disk ID(s)" >&2

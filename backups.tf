@@ -1,11 +1,6 @@
-# Discovers PVCs with backup=true label and tags the corresponding Azure disks
-data "external" "tagged_pvc_disks" {
-  program = ["bash", "${path.module}/tag-pvc-disks.sh", azurerm_resource_group.equalvote.name, azurerm_kubernetes_cluster.equalvote.name]
-}
-
 # Backup instance for each tagged disk
 resource "azurerm_data_protection_backup_instance_disk" "pvc" {
-  for_each                     = toset(data.external.tagged_pvc_disks.result["disk_ids"])
+  for_each                     = var.disk_ids
   name                         = replace(basename(each.value), "kubernetes-dynamic-pvc-", "")
   vault_id                     = azurerm_data_protection_backup_vault.equalvote.id
   location                     = azurerm_resource_group.equalvote.location

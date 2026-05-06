@@ -1,7 +1,7 @@
 # Backup instance for each tagged disk
 resource "azurerm_data_protection_backup_instance_disk" "pvc" {
   for_each                     = var.disk_ids
-  name                         = replace(basename(each.value), "kubernetes-dynamic-pvc-", "")
+  name                         = basename(each.value)
   vault_id                     = azurerm_data_protection_backup_vault.equalvote.id
   location                     = azurerm_resource_group.equalvote.location
   disk_id                      = each.value
@@ -13,7 +13,7 @@ resource "azurerm_data_protection_backup_vault" "equalvote" {
   name                = "equalvote-backup-vault"
   resource_group_name = azurerm_resource_group.equalvote.name
   location            = azurerm_resource_group.equalvote.location
-  datastore_type      = "VaultStore"
+  datastore_type      = "OperationalStore"
   redundancy          = "LocallyRedundant"
 }
 

@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >>"$GITHUB_ENV"
           mkdir --parents "$HOME/.terraform.d/plugin-cache"
-      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/.terraform.d/plugin-cache
@@ -62,7 +62,7 @@ jobs:
           echo "${{ steps.plan.outputs.stdout }}" > plan-output.txt
           echo "${{ steps.plan.outputs.stderr }}" >> plan-output.txt
         if: github.event_name == 'pull_request'
-      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+      - uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
         if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

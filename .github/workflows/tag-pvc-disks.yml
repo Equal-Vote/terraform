@@ -28,9 +28,9 @@ jobs:
 
       - name: Tag PVC disks
         run: |
-          ./tag-pvc-disks.sh equalvote equalvote tagged-disks.tfvars
+          ./tag-pvc-disks.sh equalvote equalvote tagged-disks.auto.tfvars
 
-      - name: Create PR with updated tagged-disks.tfvars
+      - name: Create PR with updated tagged-disks.auto.tfvars
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -38,10 +38,23 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           branch="tag-pvc-disks-$(date +%Y%m%d%H%M%S)"
           git checkout -b "$branch"
-          git add tagged-disks.tfvars
-          git commit -m "chore: update tagged-disks.tfvars"
+          git add tagged-disks.auto.tfvars
+          git commit -m "chore: update tagged-disks.auto.tfvars"
           git push origin "$branch"
+          cat > pr_body.txt << 'EOF'
+          Automated update of tagged-disks.auto.tfvars from tag-pvc-disks workflow.
+
+          ## Note
+          The PR created by this workflow uses the default GITHUB_TOKEN, which prevents the opentofu.yml workflow from triggering automatically. This is a GitHub security measure to prevent recursive workflow runs.
+
+          To enable automatic triggering of opentofu.yml, use a Personal Access Token (PAT) instead:
+          1. Create a PAT with 'repo' scope: https://github.com/settings/tokens
+          2. Store the PAT as a repository secret (e.g., PAT_TOKEN)
+          3. Update the GH_TOKEN environment variable in this workflow to use the PAT secret
+
+          Note: tagged-disks.auto.tfvars is now auto-loaded by OpenTofu (requires .auto.tfvars extension)
+          EOF
           gh pr create \
-            --title "chore: update tagged-disks.tfvars" \
-            --body "Automated update of tagged-disks.tfvars from tag-pvc-disks workflow." \
+            --title "chore: update tagged-disks.auto.tfvars" \
+            --body-file pr_body.txt \
             --base main

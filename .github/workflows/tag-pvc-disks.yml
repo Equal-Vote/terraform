@@ -29,7 +29,6 @@ jobs:
       - name: Tag PVC disks
         run: |
           ./tag-pvc-disks.sh equalvote equalvote tagged-disks.tfvars
-        working-directory: terraform
 
       - name: Create PR with updated tagged-disks.tfvars
         env:
@@ -46,4 +45,3 @@ jobs:
             --title "chore: update tagged-disks.tfvars" \
             --body "Automated update of tagged-disks.tfvars from tag-pvc-disks workflow." \
             --base main
-        working-directory: terraform

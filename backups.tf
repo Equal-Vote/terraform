@@ -1,7 +1,18 @@
-# resource "azurerm_resource_group" "equalvote" {
-#   name     = "equalvote-resources"
-#   location = "West Europe"
-# }
+# Discovers PVCs with backup=true label and tags the corresponding Azure disks
+data "external" "tagged_pvc_disks" {
+  program = ["bash", "${path.module}/tag-pvc-disks.sh", azurerm_resource_group.equalvote.name, azurerm_kubernetes_cluster.equalvote.name]
+}
+
+# Backup instance for each tagged disk
+resource "azurerm_data_protection_backup_instance_disk" "pvc" {
+  for_each                     = toset(data.external.tagged_pvc_disks.result["disk_ids"])
+  name                         = replace(basename(each.value), "kubernetes-dynamic-pvc-", "")
+  vault_id                     = azurerm_data_protection_backup_vault.equalvote.id
+  location                     = azurerm_resource_group.equalvote.location
+  disk_id                      = each.value
+  backup_policy_id             = azurerm_data_protection_backup_policy_disk.equalvote.id
+  snapshot_resource_group_name = azurerm_kubernetes_cluster.equalvote.node_resource_group
+}
 
 resource "azurerm_data_protection_backup_vault" "equalvote" {
   name                = "equalvote-backup-vault"
@@ -15,9 +26,8 @@ resource "azurerm_data_protection_backup_policy_disk" "equalvote" {
   name     = "equalvote-backup-policy"
   vault_id = azurerm_data_protection_backup_vault.equalvote.id
 
-  backup_repeating_time_intervals = ["R/2021-05-19T06:33:16+00:00/PT4H"]
+  backup_repeating_time_intervals = ["R/2025-01-01T02:00:00+00:00/P1D"]
   default_retention_duration      = "P7D"
-  #   time_zone                       = "W. Europe Standard Time"
 
   retention_rule {
     name     = "Daily"
@@ -30,10 +40,19 @@ resource "azurerm_data_protection_backup_policy_disk" "equalvote" {
 
   retention_rule {
     name     = "Weekly"
-    duration = "P7D"
+    duration = "P28D"
     priority = 20
     criteria {
       absolute_criteria = "FirstOfWeek"
+    }
+  }
+
+  retention_rule {
+    name     = "Monthly"
+    duration = "P180D"
+    priority = 15
+    criteria {
+      absolute_criteria = "FirstOfMonth"
     }
   }
 }

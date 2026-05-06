@@ -7,7 +7,8 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
+  pull-requests: write
 
 env:
   ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
@@ -21,8 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
 
       - uses: opentofu/setup-opentofu@fc711fa910b93cba0f3fbecaafc9f42fd0c411cb # v2.0.0
         with:
@@ -58,6 +57,19 @@ jobs:
           ./tag-pvc-disks.sh equalvote equalvote tagged-disks.tfvars
         working-directory: terraform
 
-      - name: Apply backups
-        run: tofu apply -auto-approve -no-color -input=false -var-file=tagged-disks.tfvars
+      - name: Create PR with updated tagged-disks.tfvars
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          branch="tag-pvc-disks-$(date +%Y%m%d%H%M%S)"
+          git checkout -b "$branch"
+          git add tagged-disks.tfvars
+          git commit -m "chore: update tagged-disks.tfvars"
+          git push origin "$branch"
+          gh pr create \
+            --title "chore: update tagged-disks.tfvars" \
+            --body "Automated update of tagged-disks.tfvars from tag-pvc-disks workflow." \
+            --base main
         working-directory: terraform

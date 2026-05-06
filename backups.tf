@@ -7,6 +7,11 @@ resource "azurerm_data_protection_backup_instance_disk" "pvc" {
   disk_id                      = each.value
   backup_policy_id             = azurerm_data_protection_backup_policy_disk.equalvote.id
   snapshot_resource_group_name = azurerm_kubernetes_cluster.equalvote.node_resource_group
+
+  depends_on = [
+    azurerm_role_assignment.backup_vault_disk_reader,
+    azurerm_role_assignment.backup_vault_snapshot_contributor,
+  ]
 }
 
 resource "azurerm_data_protection_backup_vault" "equalvote" {
@@ -15,6 +20,25 @@ resource "azurerm_data_protection_backup_vault" "equalvote" {
   location            = azurerm_resource_group.equalvote.location
   datastore_type      = "OperationalStore"
   redundancy          = "LocallyRedundant"
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+# Grant the backup vault permission to read each source disk
+resource "azurerm_role_assignment" "backup_vault_disk_reader" {
+  for_each             = var.disk_ids
+  scope                = each.value
+  role_definition_name = "Disk Backup Reader"
+  principal_id         = azurerm_data_protection_backup_vault.equalvote.identity[0].principal_id
+}
+
+# Grant the backup vault permission to create snapshots in the AKS node resource group
+resource "azurerm_role_assignment" "backup_vault_snapshot_contributor" {
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_kubernetes_cluster.equalvote.node_resource_group}"
+  role_definition_name = "Disk Snapshot Contributor"
+  principal_id         = azurerm_data_protection_backup_vault.equalvote.identity[0].principal_id
 }
 
 resource "azurerm_data_protection_backup_policy_disk" "equalvote" {

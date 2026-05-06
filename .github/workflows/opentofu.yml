@@ -7,9 +7,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - tag-pvc-disks.sh
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - tag-pvc-disks.sh
 permissions:
   id-token: write
   contents: read

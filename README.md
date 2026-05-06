@@ -48,6 +48,14 @@ Based on:
     az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query '[0].value' -o tsv
     ```
 1. Add ARM_ACCESS_KEY as a secret [here](https://github.com/Equal-Vote/terraform/settings/secrets/actions).
+1. The `terraform` role needs RBAC to create backup resources:
+   ```
+   az role assignment create \
+     --assignee 106fa567-ef0f-4176-af81-3f2af706fa20 \
+     --role "Role Based Access Control Administrator" \
+     --scope "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2"
+   ```
+
 
 # Connecting to the cluster
 
@@ -66,4 +74,3 @@ Commit them.
 Should we be using Managed Identity instead of Service Principal?
 https://arnav.au/2023/09/08/azure-managed-identity-vs-service-principal/
 https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/managed_service_identity
-

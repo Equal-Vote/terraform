@@ -28,7 +28,6 @@ jobs:
 
       - name: Tag PVC disks
         run: |
-          chmod +x tag-pvc-disks.sh
           ./tag-pvc-disks.sh equalvote equalvote tagged-disks.tfvars
         working-directory: terraform
 

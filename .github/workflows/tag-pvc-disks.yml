@@ -1,4 +1,4 @@
-name: Tag PVC Disks and Apply Backups
+name: Tag PVC Disks
 
 on:
   schedule:
@@ -6,50 +6,25 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write
   contents: write
   pull-requests: write
 
 env:
-  ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
   ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
 
 jobs:
-  tag-and-apply:
+  tag-pvc-disks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - uses: opentofu/setup-opentofu@fc711fa910b93cba0f3fbecaafc9f42fd0c411cb # v2.0.0
-        with:
-          tofu_version_file: .opentofu-version
-
-      - name: Configure Terraform plugin cache
-        run: |
-          echo "TF_PLUGIN_CACHE_DIR=$HOME/.terraform.d/plugin-cache" >>"$GITHUB_ENV"
-          mkdir --parents "$HOME/.terraform.d/plugin-cache"
-
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.terraform.d/plugin-cache
-          key: terraform-${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
-          restore-keys: |
-            terraform-${{ runner.os }}-
 
       - name: Azure CLI login
         uses: azure/login@93381592711f247e165c389ebb30b596c84cdc48 # v3.0.0
         with:
           creds: '{"clientId":"${{ env.ARM_CLIENT_ID }}","clientSecret":"${{ env.ARM_CLIENT_SECRET }}","subscriptionId":"${{ env.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ env.ARM_TENANT_ID }}"}'
-
-      - name: Get AKS credentials
-        run: az aks get-credentials --resource-group equalvote --name equalvote --overwrite-existing
-
-      - name: Init OpenTofu
-        run: tofu init
-        working-directory: terraform
 
       - name: Tag PVC disks
         run: |

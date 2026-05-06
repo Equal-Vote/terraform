@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Discovers all PVCs in the cluster and tags the corresponding Azure managed disks.
+# Discovers all PVC-backed Azure managed disks and tags them for backup.
 # Generates a tfvars file with disk IDs for use by Terraform.
 
 set -euo pipefail
@@ -16,42 +16,26 @@ if [ -z "$NODE_RG" ]; then
   exit 1
 fi
 
-# Get all PVCs
-PVC_INFO=$(kubectl get pvc -A -o jsonpath='{range .items[*]}{"namespace="}{.metadata.namespace}{" name="}{.metadata.name}{" volumeName="}{.spec.volumeName}{"\n"}{end}' 2>/dev/null || echo "")
+# Get all PVC-backed managed disks (CSI driver names them with kubernetes-dynamic-pvc-* prefix)
+DISK_IDS=$(az disk list -g "$NODE_RG" \
+  --query "[?starts_with(name, 'kubernetes-dynamic-pvc-')].id" \
+  -o tsv)
 
-if [ -z "$PVC_INFO" ]; then
-  echo "ERROR: No PVCs found" >&2
+if [ -z "$DISK_IDS" ]; then
+  echo "ERROR: No PVC-backed disks found in $NODE_RG" >&2
   exit 1
 fi
 
-DISK_IDS=()
+TAGGED_IDS=()
 
-while IFS= read -r line; do
-  if [ -z "$line" ]; then continue; fi
+while IFS= read -r disk_id; do
+  if [ -z "$disk_id" ]; then continue; fi
 
-  NS=$(echo "$line" | sed 's/.*namespace=\([^ ]*\).*/\1/')
-  PVC_NAME=$(echo "$line" | sed 's/.*name=\([^ ]*\).*/\1/')
-  VOLUME_NAME=$(echo "$line" | sed 's/.*volumeName=\([^ ]*\).*/\1/')
+  az disk update --ids "$disk_id" --tags backup=true > /dev/null 2>&1
+  TAGGED_IDS+=("$disk_id")
+done <<< "$DISK_IDS"
 
-  if [ -z "$VOLUME_NAME" ] || [ "$VOLUME_NAME" = "<none>" ]; then
-    echo "WARNING: PVC $NS/$PVC_NAME has no bound volume, skipping" >&2
-    continue
-  fi
-
-  DISK_ID=$(az disk list -g "$NODE_RG" --query "[?name=='$VOLUME_NAME'].id" -o tsv)
-
-  if [ -z "$DISK_ID" ]; then
-    echo "WARNING: Managed disk not found for volume $VOLUME_NAME (PVC $NS/$PVC_NAME)" >&2
-    continue
-  fi
-
-  az disk update --ids "$DISK_ID" --tags backup=true > /dev/null 2>&1
-  echo "Tagged disk: $VOLUME_NAME (PVC: $NS/$PVC_NAME)" >&2
-
-  DISK_IDS+=("$DISK_ID")
-done <<< "$PVC_INFO"
-
-if [ ${#DISK_IDS[@]} -eq 0 ]; then
+if [ ${#TAGGED_IDS[@]} -eq 0 ]; then
   echo "ERROR: No disks were tagged" >&2
   exit 1
 fi
@@ -59,10 +43,10 @@ fi
 # Generate tfvars file
 {
   echo "disk_ids = ["
-  for id in "${DISK_IDS[@]}"; do
+  for id in "${TAGGED_IDS[@]}"; do
     echo "  \"$id\","
   done
   echo "]"
 } > "$OUTPUT_FILE"
 
-echo "Generated $OUTPUT_FILE with ${#DISK_IDS[@]} disk ID(s)" >&2
+echo "Generated $OUTPUT_FILE with ${#TAGGED_IDS[@]} disk ID(s)" >&2

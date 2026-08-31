@@ -2,12 +2,21 @@
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster
 
 terraform {
+  # Versions are hardcoded here so that every run resolves the same providers,
+  # regardless of what `.terraform.lock.hcl` happens to contain. To upgrade,
+  # bump the version below and run `tofu init -upgrade`.
   required_providers {
+    azuread = {
+      source  = "registry.opentofu.org/hashicorp/azuread"
+      version = "3.9.0"
+    }
     azurerm = {
-      source = "registry.opentofu.org/hashicorp/azurerm"
+      source  = "registry.opentofu.org/hashicorp/azurerm"
+      version = "5.3.0"
     }
     kubernetes = {
-      source = "registry.opentofu.org/hashicorp/kubernetes"
+      source  = "registry.opentofu.org/hashicorp/kubernetes"
+      version = "3.2.1"
     }
   }
   backend "azurerm" {
@@ -70,6 +79,13 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     type = "SystemAssigned"
   }
 
+  # Required as of azurerm 5.x. "Manual" means we manage node pools ourselves
+  # (the default_node_pool below), which is what this cluster already does.
+  # "Auto" would hand provisioning to Karpenter-style node auto-provisioning.
+  node_provisioning_profile {
+    mode = "Manual"
+  }
+
   default_node_pool {
     name                 = "agentpool"
     vm_size              = "Standard_B2ps_v2"
@@ -112,7 +128,11 @@ resource "azurerm_subnet" "equalvote" {
   resource_group_name  = "equalvote"
   virtual_network_name = azurerm_virtual_network.equalvote.name
   address_prefixes     = ["10.0.1.0/24"]
-  service_endpoints    = ["Microsoft.Storage"]
+
+  # Was the `service_endpoints` list argument before azurerm 5.x.
+  service_endpoint {
+    service = "Microsoft.Storage"
+  }
 }
 
 # Ran:

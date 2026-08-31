@@ -7,11 +7,11 @@ resource "azurerm_user_assigned_identity" "loki-identity" {
 
 # Federated credential binding the Loki Kubernetes service account to the Azure managed identity
 resource "azurerm_federated_identity_credential" "loki-federated-credential" {
-  name      = "loki-federated-credential"
-  parent_id = azurerm_user_assigned_identity.loki-identity.id
-  issuer    = azurerm_kubernetes_cluster.equalvote.oidc_issuer_url
-  subject   = "system:serviceaccount:loki:loki"
-  audience  = ["api://AzureADTokenExchange"]
+  name                      = "loki-federated-credential"
+  user_assigned_identity_id = azurerm_user_assigned_identity.loki-identity.id
+  issuer                    = azurerm_kubernetes_cluster.equalvote.oidc_issuer_url
+  subject                   = "system:serviceaccount:loki:loki"
+  audience                  = ["api://AzureADTokenExchange"]
 }
 
 # Grant Loki read/write access to the storage account for log storage

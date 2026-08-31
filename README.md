@@ -65,9 +65,16 @@ az aks get-credentials --resource-group equalvote --name equalvote
 
 # Updating
 
-terraform init -upgrade
-Should see changes to .terraform.lock.hcl.
-Commit them.
+Provider versions are pinned to exact versions in the `required_providers` block
+in `main.tf`. To upgrade:
+
+1. Bump the `version` pins in `main.tf`.
+1. Run `tofu init -upgrade`.
+1. You should see changes to `.terraform.lock.hcl`. Commit them along with `main.tf`.
+
+The OpenTofu version itself is pinned in `.opentofu-version`, which is used by
+both [tenv](https://github.com/tofuutils/tenv) and the
+[setup-opentofu](https://github.com/opentofu/setup-opentofu) GitHub action.
 
 # TODO
 

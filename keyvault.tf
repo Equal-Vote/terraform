@@ -24,6 +24,10 @@ resource "azurerm_key_vault" "equalvote" {
   sku_name                   = "standard"
   soft_delete_retention_days = 7
 
+  # Required as of azurerm 5.x. This vault uses the `access_policy` blocks
+  # below rather than Azure RBAC, so this stays false (the pre-5.x default).
+  rbac_authorization_enabled = false
+
   # It's probably dumb to add the "evans" user (object_id ending in c5e7)
   # directly. There's probably some smart way to do it with roles or something.
   # I am not an Azure expert.

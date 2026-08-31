@@ -2,9 +2,9 @@
 
 ## Toolchain
 
-- Use `tofu` not `terraform` — OpenTofu 1.11 (pinned in `.opentofu-version`).
+- Use `tofu` not `terraform` — OpenTofu 1.12 (exact version pinned in `.opentofu-version`).
 - State is in Azure: `rg=tfstate`, `sa=equalvoteterraform`, `container=tfstate`.
-- Providers: azurerm, azuread, kubernetes, external — all from `registry.opentofu.org`.
+- Providers: azurerm, azuread, kubernetes — all from `registry.opentofu.org`, pinned to exact versions in the `required_providers` block in `main.tf`.
 
 ## Commands
 
@@ -14,7 +14,7 @@
 - Plan: `tofu plan -no-color -input=false -out=plan.file`
 - Apply: `tofu apply -no-color -input=false plan.file`
 - Lint: `tflint` (config: `.tflint.hcl`)
-- Upgrade providers: run `./upgrade.sh` (deletes lockfile, comments versions, runs `tofu init -upgrade`, then manually uncomment + update pins)
+- Upgrade providers: bump the exact `version` pins in `main.tf`, then run `tofu init -upgrade` and commit the updated `.terraform.lock.hcl`.
 - Cluster access: `az aks get-credentials --resource-group equalvote --name equalvote`
 
 ## CI

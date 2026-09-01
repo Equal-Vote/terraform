@@ -61,7 +61,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   # You can get available versions with this command:
   # az aks get-upgrades --resource-group equalvote --name equalvote --output table
-  kubernetes_version = "1.31.13"
+  kubernetes_version = "1.32.11"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
@@ -90,7 +90,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     name                 = "agentpool"
     vm_size              = "Standard_B2ps_v2"
     node_count           = var.node_count
-    orchestrator_version = "1.31"
+    orchestrator_version = "1.32"
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just
@@ -98,6 +98,15 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     # Azure!
     temporary_name_for_rotation = "wtfazure"
 
+    # Keep 2 nodes schedulable throughout an upgrade. AKS joins the surge node
+    # before it cordons anything, and max_unavailable stays at the API default
+    # of 0 (azurerm 5.3.0 doesn't expose it), so the pool goes 2 -> 3, one old
+    # node is cordoned and drained, then deleted -- never fewer than 2
+    # schedulable nodes. Raising this only makes the upgrade finish in fewer
+    # passes; it does not change the floor.
+    upgrade_settings {
+      max_surge = "1"
+    }
   }
 
 }

@@ -61,7 +61,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   # You can get available versions with this command:
   # az aks get-upgrades --resource-group equalvote --name equalvote --output table
-  kubernetes_version = "1.32.11"
+  kubernetes_version = "1.34.10"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
@@ -90,7 +90,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     name                 = "agentpool"
     vm_size              = "Standard_B2ps_v2"
     node_count           = var.node_count
-    orchestrator_version = "1.32"
+    orchestrator_version = "1.34"
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just

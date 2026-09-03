@@ -61,7 +61,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   # You can get available versions with this command:
   # az aks get-upgrades --resource-group equalvote --name equalvote --output table
-  kubernetes_version = "1.34.10"
+  kubernetes_version = "1.35.7"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
@@ -90,7 +90,14 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     name                 = "agentpool"
     vm_size              = "Standard_B2ps_v2"
     node_count           = var.node_count
-    orchestrator_version = "1.34"
+    orchestrator_version = "1.35"
+
+    # Note: this pool leaves os_sku unset, which means the generic "Ubuntu"
+    # SKU. AKS resolves that to Ubuntu 22.04 on Kubernetes 1.25-1.34 and to
+    # Ubuntu 24.04 on 1.35+, so this upgrade also rolls the nodes from 22.04 to
+    # 24.04. That's what we want -- Ubuntu 22.04 on AKS stops getting security
+    # patches on 2027-06-30. Don't pin os_sku = "Ubuntu2204" to avoid the
+    # reimage; that just defers the same work past the deadline.
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just

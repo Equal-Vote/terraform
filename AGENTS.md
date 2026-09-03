@@ -25,7 +25,7 @@
 
 ## Architecture
 
-- Single AKS cluster `equalvote` in West US 2, Kubernetes 1.34, OIDC + Workload Identity, local accounts disabled, Azure AD RBAC.
+- Single AKS cluster `equalvote` in West US 2, Kubernetes 1.35, OIDC + Workload Identity, local accounts disabled, Azure AD RBAC.
 - Azure AD groups: `DevOps` (cluster admin RBAC), `Developers` (cluster user).
 - DNS zones: `sandbox.star.vote`, `prod.equal.vote`, `dev.equal.vote`.
 - Two key vaults: `equalvote` (SOPS key — access policies use hardcoded SP object_id, not data lookup) and `equalvote-argocd` (imported via `imports.tf`).

@@ -1,0 +1,28 @@
+# Arch Linux package list for Equal-Vote/terraform — the pacman/AUR equivalent
+# of the Brewfile. Installs every CLI tool used or referenced by this repo.
+#
+# Requires an AUR helper (yay or paru) because tenv-bin is an AUR package;
+# everything else is in the official repos.
+#
+# Usage:
+#   grep -vE '^(#|$)' pkglist.txt | yay -S --needed -
+#   grep -vE '^(#|$)' pkglist.txt | paru -S --needed -
+
+# Azure CLI (`az`) — bootstrapping, `az aks get-credentials`, tag-pvc-disks.sh
+azure-cli
+
+# tenv — AUR; installs/pins OpenTofu (`tofu`) from .opentofu-version, keeping
+# local runs locked to the same version as CI. Do NOT install opentofu directly.
+tenv-bin
+
+# git — committing .terraform.lock.hcl changes and the GitOps workflow
+git
+
+# kubectl — using the cluster after `az aks get-credentials` writes the kubeconfig
+kubectl
+
+# tflint — the lint step documented in AGENTS.md (config: .tflint.hcl)
+tflint
+
+# gh — opens the tagged-disks PR in .github/workflows/tag-pvc-disks.yml
+github-cli

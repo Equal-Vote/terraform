@@ -12,7 +12,7 @@ terraform {
     }
     azurerm = {
       source  = "registry.opentofu.org/hashicorp/azurerm"
-      version = "5.3.0"
+      version = "5.4.0"
     }
     kubernetes = {
       source  = "registry.opentofu.org/hashicorp/kubernetes"
@@ -61,7 +61,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   # You can get available versions with this command:
   # az aks get-upgrades --resource-group equalvote --name equalvote --output table
-  kubernetes_version = "1.35.7"
+  kubernetes_version = "1.36.3"
 
   # Enabling OIDC and Workload Identity so external-dns and cert-manager can manage DNS records in Azure DNS.
   oidc_issuer_enabled       = true
@@ -90,14 +90,14 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     name                 = "agentpool"
     vm_size              = "Standard_B2ps_v2"
     node_count           = var.node_count
-    orchestrator_version = "1.35"
+    orchestrator_version = "1.36"
 
     # Note: this pool leaves os_sku unset, which means the generic "Ubuntu"
-    # SKU. AKS resolves that to Ubuntu 22.04 on Kubernetes 1.25-1.34 and to
-    # Ubuntu 24.04 on 1.35+, so this upgrade also rolls the nodes from 22.04 to
-    # 24.04. That's what we want -- Ubuntu 22.04 on AKS stops getting security
-    # patches on 2027-06-30. Don't pin os_sku = "Ubuntu2204" to avoid the
-    # reimage; that just defers the same work past the deadline.
+    # SKU. AKS resolves that to Ubuntu 24.04 on Kubernetes 1.35+, so the nodes
+    # are already on 24.04 -- the 1.35 upgrade rolled them off 22.04. 1.36 maps
+    # to 24.04 as well, so this upgrade reimages the nodes without changing the
+    # Ubuntu version. Don't pin os_sku = "Ubuntu2204"; AKS stops patching 22.04
+    # on 2027-06-30.
 
     # This "optional" setting is needed if you ever want to actually change one
     # of like 15 other settings in your cluster. More Azure nonsense - just
@@ -107,7 +107,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
     # Keep 2 nodes schedulable throughout an upgrade. AKS joins the surge node
     # before it cordons anything, and max_unavailable stays at the API default
-    # of 0 (azurerm 5.3.0 doesn't expose it), so the pool goes 2 -> 3, one old
+    # of 0 (azurerm 5.4.0 doesn't expose it), so the pool goes 2 -> 3, one old
     # node is cordoned and drained, then deleted -- never fewer than 2
     # schedulable nodes. Raising this only makes the upgrade finish in fewer
     # passes; it does not change the floor.

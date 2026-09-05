@@ -64,7 +64,7 @@ jobs:
       - id: validate
         run: tofu validate -no-color
       - id: plan
-        run: tofu plan -no-color -input=false -out=plan.file
+        run: tofu plan -concise -no-color -input=false -out=plan.file
         # We need to continue-on-error here so we can print the tofu plan output even on failure.
         continue-on-error: true
       - run: |

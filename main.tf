@@ -88,7 +88,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   default_node_pool {
     name                 = "agentpool"
-    vm_size              = "Standard_B2ps_v2"
+    vm_size              = "Standard_B4ps_v2"
     node_count           = var.node_count
     orchestrator_version = "1.36"
 
@@ -105,10 +105,10 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     # Azure!
     temporary_name_for_rotation = "wtfazure"
 
-    # Keep 2 nodes schedulable throughout an upgrade. AKS joins the surge node
+    # Keep 3 nodes schedulable throughout an upgrade. AKS joins the surge node
     # before it cordons anything, and max_unavailable stays at the API default
-    # of 0 (azurerm 5.4.0 doesn't expose it), so the pool goes 2 -> 3, one old
-    # node is cordoned and drained, then deleted -- never fewer than 2
+    # of 0 (azurerm 5.4.0 doesn't expose it), so the pool goes 3 -> 4, one old
+    # node is cordoned and drained, then deleted -- never fewer than 3
     # schedulable nodes. Raising this only makes the upgrade finish in fewer
     # passes; it does not change the floor.
     upgrade_settings {

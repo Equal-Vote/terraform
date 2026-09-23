@@ -117,17 +117,22 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
 }
 
-# Second node pool, deliberately in a different VM family. Every VM family
-# available to this subscription in West US 2 is capped at 10 vCPU, and resizing
-# a pool transiently needs twice its vCPU because AKS stands up a temporary pool
-# before deleting the original. Two nodes in one family would need 16 and fail;
-# split across two families each sits at 4 of 10, leaving room to both resize
-# and surge-upgrade. standardBpsv2Family is at 0, so no B-series ARM64 node can
-# be allocated at all -- that is why neither pool is a B SKU.
-resource "azurerm_kubernetes_cluster_node_pool" "light" {
-  name                  = "lightpool"
+# Second node pool, in a different VM family from the default pool on purpose.
+# Every VM family available to this subscription in West US 2 is capped at 10
+# vCPU, and resizing a pool transiently needs twice its vCPU because AKS stands
+# up a temporary pool before deleting the original. Two nodes in one family would
+# need 16 and fail; one node in each of two families needs only 8 in either.
+#
+# HEADS UP: standardBpsv2Family is currently at limit 0 in West US 2 (4 vCPU
+# grandfathered in, isQuotaApplicable true), and self-service increases are
+# refused with QuotaNotAvailableForResource. Until a support request raises it to
+# at least 8 -- 4 for this node, 4 so the pool can surge-upgrade or rotate --
+# creating this pool fails with ErrCode_InsufficientVCPUQuota. The default pool
+# is on Dpsv6, which does have quota, so it converges either way.
+resource "azurerm_kubernetes_cluster_node_pool" "burst" {
+  name                  = "burstpool"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.equalvote.id
-  vm_size               = "Standard_D4pls_v6"
+  vm_size               = "Standard_B4ps_v2"
   node_count            = 1
   orchestrator_version  = "1.36"
 

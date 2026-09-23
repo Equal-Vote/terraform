@@ -105,47 +105,22 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     # Azure!
     temporary_name_for_rotation = "wtfazure"
 
-    # This pool is one node, so an upgrade surges it 1 -> 2. AKS joins the surge
-    # node before it cordons anything, and max_unavailable stays at the API
-    # default of 0 (azurerm 5.4.0 doesn't expose it), so the old node is drained
-    # only once the new one is Ready. Cluster-wide the floor is this pool's node
-    # plus lightpool's, and the two pools upgrade independently.
+    # Keep 2 nodes schedulable throughout an upgrade. AKS joins the surge node
+    # before it cordons anything, and max_unavailable stays at the API default
+    # of 0 (azurerm 5.4.0 doesn't expose it), so the pool goes 2 -> 3, one old
+    # node is cordoned and drained, then deleted -- never fewer than 2
+    # schedulable nodes.
+    #
+    # HEADS UP: that surge node makes 3 x 4 = 12 vCPU, against a
+    # StandardDpsv6Family limit of 10 in West US 2. Upgrades fail with
+    # ErrCode_InsufficientVCPUQuota until that limit is raised to 12 or more.
+    # Until then, upgrade by scaling this pool to 1 node first (surge 1 -> 2 is
+    # 8 vCPU and fits), then scaling back to 2.
     upgrade_settings {
       max_surge = "1"
     }
   }
 
-}
-
-# Second node pool, in a different VM family from the default pool on purpose.
-# Every VM family available to this subscription in West US 2 is capped at 10
-# vCPU, and resizing a pool transiently needs twice its vCPU because AKS stands
-# up a temporary pool before deleting the original. Two nodes in one family would
-# need 16 and fail; one node in each of two families needs only 8 in either.
-#
-# HEADS UP: standardBpsv2Family is currently at limit 0 in West US 2 (4 vCPU
-# grandfathered in, isQuotaApplicable true), and self-service increases are
-# refused with QuotaNotAvailableForResource. Until a support request raises it to
-# at least 8 -- 4 for this node, 4 so the pool can surge-upgrade or rotate --
-# creating this pool fails with ErrCode_InsufficientVCPUQuota. The default pool
-# is on Dpsv6, which does have quota, so it converges either way.
-resource "azurerm_kubernetes_cluster_node_pool" "burst" {
-  name                  = "burstpool"
-  kubernetes_cluster_id = azurerm_kubernetes_cluster.equalvote.id
-  vm_size               = "Standard_B4ps_v2"
-  node_count            = 1
-  orchestrator_version  = "1.36"
-
-  # System rather than User: with a single node in each pool, system addons have
-  # to be schedulable on either one, or losing a pool strands them.
-  mode = "System"
-
-  # Same rotation dance as the default pool -- see the note there.
-  temporary_name_for_rotation = "wtfazure2"
-
-  upgrade_settings {
-    max_surge = "1"
-  }
 }
 
 # Azure RBAC: Allow DevOps and Developers groups to get credentials

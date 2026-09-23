@@ -1,1 +1,1 @@
-node_count = 2
+node_count = 3

@@ -88,7 +88,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   default_node_pool {
     name                 = "agentpool"
-    vm_size              = "Standard_B4ps_v2"
+    vm_size              = "Standard_D4ps_v6"
     node_count           = var.node_count
     orchestrator_version = "1.36"
 

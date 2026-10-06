@@ -88,7 +88,7 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
 
   default_node_pool {
     name                 = "agentpool"
-    vm_size              = "Standard_D4ps_v6"
+    vm_size              = "Standard_D2ps_v6"
     node_count           = var.node_count
     orchestrator_version = "1.36"
 
@@ -111,11 +111,8 @@ resource "azurerm_kubernetes_cluster" "equalvote" {
     # node is cordoned and drained, then deleted -- never fewer than 2
     # schedulable nodes.
     #
-    # HEADS UP: that surge node makes 3 x 4 = 12 vCPU, against a
-    # StandardDpsv6Family limit of 10 in West US 2. Upgrades fail with
-    # ErrCode_InsufficientVCPUQuota until that limit is raised to 12 or more.
-    # Until then, upgrade by scaling this pool to 1 node first (surge 1 -> 2 is
-    # 8 vCPU and fits), then scaling back to 2.
+    # With Standard_D2ps_v6 (2 vCPU / 8 GiB) the surge node makes 3 x 2 = 6
+    # vCPU, which fits the StandardDpsv6Family limit of 10 in West US 2.
     upgrade_settings {
       max_surge = "1"
     }

@@ -22,30 +22,56 @@ if [ -z "$NODE_RG" ]; then
   exit 1
 fi
 
-# Get all PVC-backed managed disks
-DISK_IDS=$(az disk list -g "$NODE_RG" \
-  --query "[?starts_with(name, 'pvc-')].id" \
+# Get all PVC-backed managed disks, with the PVC each was created for. The CSI
+# driver tags every disk it provisions with the PVC's namespace and name.
+DISKS=$(az disk list -g "$NODE_RG" \
+  --query "[?starts_with(name, 'pvc-')].[id, tags.\"kubernetes.io-created-for-pvc-namespace\", tags.\"kubernetes.io-created-for-pvc-name\"]" \
   -o tsv)
 
-if [ -z "$DISK_IDS" ]; then
+if [ -z "$DISKS" ]; then
   echo "ERROR: No PVC-backed disks found in $NODE_RG" >&2
   exit 1
 fi
+
+# "namespace/pvc" for each disk ID, written next to the ID in the tfvars file.
+# Once a disk is deleted its tags are gone, so this comment is the only record
+# of which PVC a backup instance (named after the disk) belonged to.
+declare -A LABELS
 
 # Merge with the disks already in the file. Only the disk_ids list is read
 # back; current_disk_ids is rebuilt from scratch every run.
 EXISTING_IDS=""
 if [ -f "$OUTPUT_FILE" ]; then
-  EXISTING_IDS=$(sed -n '/^disk_ids = \[/,/^\]/p' "$OUTPUT_FILE" | grep -o '"/subscriptions/[^"]*"' | tr -d '"' || true)
+  while IFS= read -r line; do
+    disk_id=$(grep -o '"/subscriptions/[^"]*"' <<< "$line" | tr -d '"') || continue
+    EXISTING_IDS+="$disk_id"$'\n'
+    if [[ "$line" == *"# "* ]]; then
+      LABELS["$disk_id"]="${line#*# }"
+    fi
+  done < <(sed -n '/^disk_ids = \[/,/^\]/p' "$OUTPUT_FILE")
 fi
-CURRENT_IDS=$(printf '%s\n' "$DISK_IDS" | sed '/^$/d' | LC_ALL=C sort -u)
-ALL_IDS=$(printf '%s\n%s\n' "$EXISTING_IDS" "$CURRENT_IDS" | sed '/^$/d' | LC_ALL=C sort -u)
+
+CURRENT_IDS=""
+while IFS=$'\t' read -r disk_id pvc_namespace pvc_name; do
+  [ -n "$disk_id" ] || continue
+  CURRENT_IDS+="$disk_id"$'\n'
+  if [ -n "$pvc_namespace" ] && [ "$pvc_namespace" != "None" ]; then
+    LABELS["$disk_id"]="$pvc_namespace/$pvc_name"
+  fi
+done <<< "$DISKS"
+
+CURRENT_IDS=$(printf '%s' "$CURRENT_IDS" | LC_ALL=C sort -u)
+ALL_IDS=$(printf '%s%s\n' "$EXISTING_IDS" "$CURRENT_IDS" | sed '/^$/d' | LC_ALL=C sort -u)
 
 print_list() {
   echo "$1 = ["
   while IFS= read -r disk_id; do
     if [ -n "$disk_id" ]; then
-      echo "  \"$disk_id\","
+      if [ -n "${LABELS[$disk_id]:-}" ]; then
+        echo "  \"$disk_id\", # ${LABELS[$disk_id]}"
+      else
+        echo "  \"$disk_id\","
+      fi
     fi
   done <<< "$2"
   echo "]"

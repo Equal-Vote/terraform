@@ -12,7 +12,7 @@ terraform {
     }
     azurerm = {
       source  = "registry.opentofu.org/hashicorp/azurerm"
-      version = "5.4.0"
+      version = "5.5.0"
     }
     kubernetes = {
       source  = "registry.opentofu.org/hashicorp/kubernetes"

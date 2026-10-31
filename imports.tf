@@ -12,3 +12,9 @@ import {
   to = azurerm_key_vault_key.sops-key
   id = "https://equalvote-argocd.vault.azure.net/keys/sops-key/9d7a971e677f4d8a9f2f7adaf349f7ff"
 }
+
+# Granted by hand in the portal during the 2026 PVC restore.
+import {
+  to = azurerm_role_assignment.backup_vault_restore_operator
+  id = "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourcegroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Authorization/roleAssignments/2e52d099-1612-58f7-a17b-7fa42a5ca240"
+}

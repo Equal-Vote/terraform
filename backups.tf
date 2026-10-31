@@ -26,9 +26,10 @@ resource "azurerm_data_protection_backup_vault" "equalvote" {
   }
 }
 
-# Grant the backup vault permission to read each source disk
+# Grant the backup vault permission to read each source disk. Only disks that
+# still exist: Azure removes a disk's role assignments when the disk is deleted.
 resource "azurerm_role_assignment" "backup_vault_disk_reader" {
-  for_each             = var.disk_ids
+  for_each             = var.current_disk_ids
   scope                = each.value
   role_definition_name = "Disk Backup Reader"
   principal_id         = azurerm_data_protection_backup_vault.equalvote.identity[0].principal_id

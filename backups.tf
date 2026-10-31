@@ -42,6 +42,15 @@ resource "azurerm_role_assignment" "backup_vault_snapshot_contributor" {
   principal_id         = azurerm_data_protection_backup_vault.equalvote.identity[0].principal_id
 }
 
+# Grant the backup vault permission to create restored disks in the AKS node
+# resource group. Without it, restore triggers fail; during the 2026 restore
+# this was granted by hand in the portal and is imported in imports.tf.
+resource "azurerm_role_assignment" "backup_vault_restore_operator" {
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_kubernetes_cluster.equalvote.node_resource_group}"
+  role_definition_name = "Disk Restore Operator"
+  principal_id         = azurerm_data_protection_backup_vault.equalvote.identity[0].principal_id
+}
+
 resource "azurerm_data_protection_backup_policy_disk" "equalvote" {
   name     = "equalvote-backup-policy"
   vault_id = azurerm_data_protection_backup_vault.equalvote.id

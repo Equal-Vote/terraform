@@ -1,5 +1,4 @@
 disk_ids = [
-  "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-00a3f621-3d0d-4473-bab2-071cd9356775", # fider/fider-db-1
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-3cd6e8ba-fb7f-4031-a69d-e5cd96e8efba", # starvote/data-postgresql-0
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-56229c63-fd75-49d0-8f6b-7ce7d107bc68", # keycloak/data-keycloak-postgresql-0
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-a144bae2-f4fd-4e6f-ae57-4f988ba4ca07", # kube-prometheus-stack/prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0
@@ -9,7 +8,6 @@ disk_ids = [
 ]
 
 current_disk_ids = [
-  "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-00a3f621-3d0d-4473-bab2-071cd9356775", # fider/fider-db-1
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-3cd6e8ba-fb7f-4031-a69d-e5cd96e8efba", # starvote/data-postgresql-0
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-56229c63-fd75-49d0-8f6b-7ce7d107bc68", # keycloak/data-keycloak-postgresql-0
   "/subscriptions/86f3145a-48cc-4255-8757-dd3104d15e57/resourceGroups/MC_equalvote_equalvote_westus2/providers/Microsoft.Compute/disks/pvc-a144bae2-f4fd-4e6f-ae57-4f988ba4ca07", # kube-prometheus-stack/prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0

@@ -8,15 +8,15 @@ terraform {
   required_providers {
     azuread = {
       source  = "registry.opentofu.org/hashicorp/azuread"
-      version = "3.9.0"
+      version = "3.10.0"
     }
     azurerm = {
       source  = "registry.opentofu.org/hashicorp/azurerm"
-      version = "5.5.0"
+      version = "5.11.0"
     }
     kubernetes = {
       source  = "registry.opentofu.org/hashicorp/kubernetes"
-      version = "3.2.1"
+      version = "3.4.0"
     }
   }
   backend "azurerm" {
